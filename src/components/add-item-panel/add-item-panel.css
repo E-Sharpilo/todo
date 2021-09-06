@@ -1,0 +1,8 @@
+.add-item-inner {
+    display: flex;
+    margin-top: 5px;
+}
+
+.add-item-inner input {
+    margin-right: 5px;
+}

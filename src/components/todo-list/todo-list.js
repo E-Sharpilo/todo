@@ -3,11 +3,11 @@ import TodoListItem from '../todo-list-item/';
 import './todo-list.css';
 
 
-const TodoList = ({ todoData }) => {
+const TodoList = ({ todoData, onDeleted }) => {
   const elements = todoData.map((item) => {
     const { id, ...itemsProps } = item
     return (
-      <li className="list-group-item" key={id}><TodoListItem {...itemsProps} /></li>
+      <li className="list-group-item" key={id}><TodoListItem {...itemsProps} onDeleted={() => onDeleted(id)} /></li>
     );
   });
   return (
