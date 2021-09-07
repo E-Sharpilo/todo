@@ -19,7 +19,9 @@ export default class App extends Component {
             this.createTodoItem('Drink Coffee'),
             this.createTodoItem('Build React App'),
             this.createTodoItem('Relax'),
-        ]
+        ],
+        term: '',
+        filter: 'all'
     };
     createTodoItem(label) {
         return {
@@ -28,7 +30,7 @@ export default class App extends Component {
             done: false,
             id: this.maxId++
         }
-    }
+    };
 
     deleteItem = (id) => {
         this.setState(({ todoData }) => {
@@ -39,7 +41,7 @@ export default class App extends Component {
                 todoData: newArray
             }
         });
-    }
+    };
 
     addItem = (text) => {
         const newItem = this.createTodoItem(text);
@@ -50,7 +52,7 @@ export default class App extends Component {
                 todoData: newArray
             }
         })
-    }
+    };
 
     toggleProperty = (arr, id, properName) => {
         const idx = arr.findIndex((el) => el.id === id);
@@ -58,7 +60,7 @@ export default class App extends Component {
         const newItem = { ...oldItem, [properName]: !oldItem[properName] };
         return [...arr.slice(0, idx), newItem, ...arr.slice(idx + 1)];
 
-    }
+    };
 
     onToggleImportant = (id) => {
         this.setState(({ todoData }) => {
@@ -66,7 +68,7 @@ export default class App extends Component {
                 todoData: this.toggleProperty(todoData, id, 'important')
             }
         })
-    }
+    };
 
     onToggleDone = (id) => {
         this.setState(({ todoData }) => {
@@ -74,20 +76,54 @@ export default class App extends Component {
                 todoData: this.toggleProperty(todoData, id, 'done')
             }
         })
+    };
+    onSearchChange = (term) => {
+        this.setState({ term })
+    };
+    onFilterChange = (filter) => {
+        this.setState({ filter })
+    }
+
+    search = (items, term) => {
+        if (term.length === 0) {
+            return items
+        }
+        return items.filter((item) => {
+            return item.label.toLowerCase().indexOf(term.toLowerCase()) > -1;
+        })
+    };
+
+    filter = (items, filter) => {
+        switch (filter) {
+            case 'all': {
+                return items
+            }
+            case 'active': {
+                return items.filter((item) => !item.done)
+            }
+            case 'done': {
+                return items.filter((item) => item.done)
+            }
+            default: {
+                return items
+            }
+        }
     }
 
     render() {
-        const { todoData } = this.state;
+        const { todoData, term, filter } = this.state;
+        const visibleItems = this.filter(this.search(todoData, term), filter);
         const doneCount = todoData.filter((el) => el.done).length
         const todoCount = todoData.length - doneCount
         return (
             <div className="app">
                 <AppHeader toDo={todoCount} done={doneCount} />
                 <div className="top-panel">
-                    <SearchPanel />
-                    <ItemStatusFilter />
+                    <SearchPanel onSearchChange={this.onSearchChange} />
+                    <ItemStatusFilter filter={filter}
+                        onFilterChange={this.onFilterChange} />
                 </div>
-                <TodoList todoData={todoData}
+                <TodoList todoData={visibleItems}
                     onDeleted={this.deleteItem}
                     onToggleImportant={this.onToggleImportant}
                     onToggleDone={this.onToggleDone} />
