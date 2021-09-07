@@ -2,3 +2,9 @@
     max-width: 500px;
     margin: 0 auto;
 }
+
+.top-panel {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
